@@ -1,3 +1,7 @@
+import axios, { AxiosResponse } from "axios";
+
+const dbURL = 'http://localhost:3000/dogs';
+
 interface DogProps {
   id?: number;
   breedName?: string;
@@ -38,4 +42,22 @@ export class Dog {
       callback();
     })
   };
-}
+
+  fetch(): void {
+    axios.get(`${dbURL}/${this.get('id')}`)
+      .then((response: AxiosResponse): void => {
+        this.set(response.data);
+      })
+  };
+
+  save(): void {
+    const id = this.get('id');
+
+    if (id) {
+      axios.put(`${dbURL}/${id}`, this.data)
+    } else {
+      axios.post(dbURL, this.data);
+    }
+  };
+
+};
