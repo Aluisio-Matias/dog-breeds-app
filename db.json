@@ -1,3 +1,13 @@
 {
-  "dogs": []
+  "dogs": [
+    {
+      "breedName": "German Shepard",
+      "scientificName": "Canis lupus familiaris",
+      "temperament": "Inteligent",
+      "lifeSpan": "9-13 years",
+      "dailySleep": "12-14 years",
+      "gestationPeriod": "63 days",
+      "id": 1
+    }
+  ]
 }

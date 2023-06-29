@@ -1,7 +1,7 @@
 interface DogProps {
+  id?: number;
   breedName?: string;
   scientificName?: string;
-  coolName?: string;
   temperament?: string;
   lifeSpan?: string;
   dailySleep?: string;
