@@ -36,4 +36,4 @@ dog.on('save', () => {
   console.log('Saved!')
 })
 
-dog.trigger('save');
+dog.trigger('change');
