@@ -8,7 +8,12 @@ interface DogProps {
   gestationPeriod?: string;
 };
 
+//type alias - callback funtion that doesn't return anything
+type Callback = () => void;
+
 export class Dog {
+  events: {[key: string]: Callback[]} = {};
+  
   constructor(private data: DogProps) {}
 
   get(propName: string): (number | string) {
@@ -17,5 +22,20 @@ export class Dog {
 
   set(update: DogProps): void {
     Object.assign(this.data, update)
-  }
+  };
+
+  on(eventName: string, callback: Callback): void {
+    const handlers = this.events[eventName] || [];
+    handlers.push(callback);
+    this.events[eventName] = handlers;
+  };
+
+  trigger(eventName: string): void {
+    const handlers = this.events[eventName];
+    if (!handlers || handlers.length === 0) return;
+
+    handlers.forEach(callback => {
+      callback();
+    })
+  };
 }

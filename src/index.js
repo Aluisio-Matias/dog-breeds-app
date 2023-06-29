@@ -18,3 +18,16 @@ console.log(dog.get('temperament'));
 console.log(dog.get('lifeSpan'));
 console.log(dog.get('dailySleep'));
 console.log(dog.get('gestationPeriod'));
+dog.on('change', function () {
+    console.log('change #1');
+});
+dog.on('change', function () {
+    console.log('change #2');
+});
+dog.on('click', function () {
+    console.log('click');
+});
+dog.on('save', function () {
+    console.log('Saved!');
+});
+dog.trigger('change');
