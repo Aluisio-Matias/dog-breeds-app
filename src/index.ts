@@ -24,3 +24,7 @@ const dog = new Dog({
 })
 
 dog.save();
+dog.events.on('change', () => {
+  console.log('change!')
+});
+dog.events.trigger('change');

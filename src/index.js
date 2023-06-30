@@ -1,33 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var axios_1 = require("axios");
 var Dog_1 = require("./models/Dog");
-var dog = new Dog_1.Dog({
+var dbURL = 'http://localhost:3000/dogs';
+axios_1.default.post(dbURL, {
     breedName: 'German Shepard',
     scientificName: 'Canis lupus familiaris',
-    coolName: 'Chase',
     temperament: 'Inteligent',
     lifeSpan: '9-13 years',
     dailySleep: '12-14 years',
     gestationPeriod: '63 days'
 });
-dog.set({ coolName: 'Wolf', temperament: 'Smart, active' });
-console.log(dog.get('breedName'));
-console.log(dog.get('scientificName'));
-console.log(dog.get('coolName'));
-console.log(dog.get('temperament'));
-console.log(dog.get('lifeSpan'));
-console.log(dog.get('dailySleep'));
-console.log(dog.get('gestationPeriod'));
-dog.on('change', function () {
-    console.log('change #1');
+axios_1.default.get("".concat(dbURL, "/1"));
+var dog = new Dog_1.Dog({
+    breedName: 'Boder Collie',
+    scientificName: 'unknown',
+    temperament: 'Active',
+    lifeSpan: '9-13 years',
+    dailySleep: '12-14 years',
+    gestationPeriod: '63 days'
 });
-dog.on('change', function () {
-    console.log('change #2');
+dog.save();
+dog.events.on('change', function () {
+    console.log('change!');
 });
-dog.on('click', function () {
-    console.log('click');
-});
-dog.on('save', function () {
-    console.log('Saved!');
-});
-dog.trigger('change');
+dog.events.trigger('change');

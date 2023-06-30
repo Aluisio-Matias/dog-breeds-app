@@ -1,11 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Dog = void 0;
+var axios_1 = require("axios");
+var Eventing_1 = require("./Eventing");
+var dbURL = 'http://localhost:3000/dogs';
 ;
 var Dog = /** @class */ (function () {
     function Dog(data) {
         this.data = data;
-        this.events = {};
+        this.events = new Eventing_1.Eventing();
     }
     Dog.prototype.get = function (propName) {
         return this.data[propName];
@@ -15,21 +18,25 @@ var Dog = /** @class */ (function () {
         Object.assign(this.data, update);
     };
     ;
-    Dog.prototype.on = function (eventName, callback) {
-        var handlers = this.events[eventName] || [];
-        handlers.push(callback);
-        this.events[eventName] = handlers;
+    Dog.prototype.fetch = function () {
+        var _this = this;
+        axios_1.default.get("".concat(dbURL, "/").concat(this.get('id')))
+            .then(function (response) {
+            _this.set(response.data);
+        });
     };
     ;
-    Dog.prototype.trigger = function (eventName) {
-        var handlers = this.events[eventName];
-        if (!handlers || handlers.length === 0)
-            return;
-        handlers.forEach(function (callback) {
-            callback();
-        });
+    Dog.prototype.save = function () {
+        var id = this.get('id');
+        if (id) {
+            axios_1.default.put("".concat(dbURL, "/").concat(id), this.data);
+        }
+        else {
+            axios_1.default.post(dbURL, this.data);
+        }
     };
     ;
     return Dog;
 }());
 exports.Dog = Dog;
+;
