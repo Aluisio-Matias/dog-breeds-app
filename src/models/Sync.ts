@@ -1,16 +1,20 @@
 import axios, { AxiosPromise } from "axios";
 import { DogProps } from "./Dog";
+
 const rootUrl = 'http://localhost:3000/users';
 
-export class Sync {
+interface HasId {
+  id?: number;
+}
+
+export class Sync<T extends HasId> {
   constructor(public rootUrl: string) {};
 
   fetch(id : number): AxiosPromise {
    return axios.get(`${this.rootUrl}/${id}`)
-      
   };
 
-  save(data: DogProps): AxiosPromise {
+  save(data: T): AxiosPromise {
     const { id } = data;
 
     if (id) {
