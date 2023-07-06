@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Sync = void 0;
 var axios_1 = require("axios");
-var rootUrl = 'http://localhost:3000/users';
+var rootUrl = 'http://localhost:3000/dogs';
 var Sync = /** @class */ (function () {
     function Sync(rootUrl) {
         this.rootUrl = rootUrl;

@@ -574,31 +574,135 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 }
 
 },{}],"h7u1C":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-var _axios = require("axios");
-var _axiosDefault = parcelHelpers.interopDefault(_axios);
 var _dog = require("./models/Dog");
 const dbURL = "http://localhost:3000/dogs";
-(0, _axiosDefault.default).post(dbURL, {
-    breedName: "German Shepard",
-    scientificName: "Canis lupus familiaris",
-    temperament: "Inteligent",
-    lifeSpan: "9-13 years",
-    dailySleep: "12-14 years",
-    gestationPeriod: "63 days"
-});
-(0, _axiosDefault.default).get(`${dbURL}/1`);
 const dog = new (0, _dog.Dog)({
-    breedName: "Boder Collie",
-    scientificName: "unknown",
-    temperament: "Active",
-    lifeSpan: "9-13 years",
-    dailySleep: "12-14 years",
-    gestationPeriod: "63 days"
+    id: 1,
+    breedName: "G Shep"
+});
+dog.on("save", ()=>{
+    console.log(dog);
 });
 dog.save();
 
-},{"axios":"jo6P5","./models/Dog":"e1ndH","@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"jo6P5":[function(require,module,exports) {
+},{"./models/Dog":"e1ndH"}],"e1ndH":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Dog", ()=>Dog);
+var _eventing = require("./Eventing");
+var _sync = require("./Sync");
+var _attributes = require("./Attributes");
+const rootUrl = "http://localhost:3000/dogs";
+class Dog {
+    constructor(attrs){
+        this.events = new (0, _eventing.Eventing)();
+        this.sync = new (0, _sync.Sync)(rootUrl);
+        this.attributes = new (0, _attributes.Attributes)(attrs);
+    }
+    get on() {
+        return this.events.on;
+    }
+    get trigger() {
+        return this.events.trigger;
+    }
+    get get() {
+        return this.attributes.get;
+    }
+    set(update) {
+        this.attributes.set(update);
+        this.events.trigger("change");
+    }
+    fetch() {
+        const id = this.get("id");
+        if (typeof id !== "number") throw new Error("Cannot fetch without an id");
+        this.sync.fetch(id).then((response)=>{
+            this.set(response.data);
+        });
+    }
+    save() {
+        this.sync.save(this.attributes.getAll()).then((response)=>{
+            this.trigger("save");
+        }).catch(()=>{
+            this.trigger("error");
+        });
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq","./Eventing":"7459s","./Sync":"QO3Gl","./Attributes":"6Bbds"}],"39NZq":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}],"7459s":[function(require,module,exports) {
+//type alias - callback funtion that doesn't return anything
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Eventing", ()=>Eventing);
+class Eventing {
+    constructor(){
+        this.events = {};
+        this.on = (eventName, callback)=>{
+            const handlers = this.events[eventName] || [];
+            handlers.push(callback);
+            this.events[eventName] = handlers;
+        };
+        this.trigger = (eventName)=>{
+            const handlers = this.events[eventName];
+            if (!handlers || handlers.length === 0) return;
+            handlers.forEach((callback)=>{
+                callback();
+            });
+        };
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"QO3Gl":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Sync", ()=>Sync);
+var _axios = require("axios");
+var _axiosDefault = parcelHelpers.interopDefault(_axios);
+const rootUrl = "http://localhost:3000/dogs";
+class Sync {
+    constructor(rootUrl){
+        this.rootUrl = rootUrl;
+    }
+    fetch(id) {
+        return (0, _axiosDefault.default).get(`${this.rootUrl}/${id}`);
+    }
+    save(data) {
+        const { id  } = data;
+        if (id) return (0, _axiosDefault.default).put(`${this.rootUrl}/${id}`, data);
+        else return (0, _axiosDefault.default).post(this.rootUrl, data);
+    }
+}
+
+},{"axios":"jo6P5","@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"jo6P5":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "default", ()=>(0, _axiosJsDefault.default));
@@ -1275,37 +1379,7 @@ function bind(fn, thisArg) {
     };
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"39NZq":[function(require,module,exports) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, "__esModule", {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
-
-},{}],"cpqD8":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"cpqD8":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _utilsJs = require("./../utils.js");
@@ -4953,48 +5027,25 @@ Object.entries(HttpStatusCode).forEach(([key, value])=>{
 });
 exports.default = HttpStatusCode;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"e1ndH":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"6Bbds":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Dog", ()=>Dog);
-var _axios = require("axios");
-var _axiosDefault = parcelHelpers.interopDefault(_axios);
-const dbURL = "http://localhost:3000/dogs";
-class Dog {
+parcelHelpers.export(exports, "Attributes", ()=>Attributes);
+class Attributes {
     constructor(data){
         this.data = data;
-        this.events = {};
-    }
-    get(propName) {
-        return this.data[propName];
+        this.get = (key)=>{
+            return this.data[key];
+        };
     }
     set(update) {
         Object.assign(this.data, update);
     }
-    on(eventName, callback) {
-        const handlers = this.events[eventName] || [];
-        handlers.push(callback);
-        this.events[eventName] = handlers;
-    }
-    trigger(eventName) {
-        const handlers = this.events[eventName];
-        if (!handlers || handlers.length === 0) return;
-        handlers.forEach((callback)=>{
-            callback();
-        });
-    }
-    fetch() {
-        (0, _axiosDefault.default).get(`${dbURL}/${this.get("id")}`).then((response)=>{
-            this.set(response.data);
-        });
-    }
-    save() {
-        const id = this.get("id");
-        if (id) (0, _axiosDefault.default).put(`${dbURL}/${id}`, this.data);
-        else (0, _axiosDefault.default).post(dbURL, this.data);
+    getAll() {
+        return this.data;
     }
 }
 
-},{"axios":"jo6P5","@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}]},["2dBUg","h7u1C"], "h7u1C", "parcelRequire8009")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}]},["2dBUg","h7u1C"], "h7u1C", "parcelRequire8009")
 
 //# sourceMappingURL=index.b71e74eb.js.map

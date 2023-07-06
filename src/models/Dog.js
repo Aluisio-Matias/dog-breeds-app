@@ -5,7 +5,7 @@ var Eventing_1 = require("./Eventing");
 var Sync_1 = require("./Sync");
 var Attributes_1 = require("./Attributes");
 ;
-var rootUrl = 'http://localhost:3000/users';
+var rootUrl = 'http://localhost:3000/dogs';
 var Dog = /** @class */ (function () {
     function Dog(attrs) {
         this.events = new Eventing_1.Eventing();
