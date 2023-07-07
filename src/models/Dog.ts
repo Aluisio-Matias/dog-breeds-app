@@ -12,6 +12,7 @@ export interface DogProps {
   lifeSpan?: string;
   dailySleep?: string;
   gestationPeriod?: string;
+  origin?: string;
 };
 
 const rootUrl = 'http://localhost:3000/dogs';

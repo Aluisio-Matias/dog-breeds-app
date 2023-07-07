@@ -1,9 +1,11 @@
+import { DogForm } from "./Views/DogForm";
 import { Dog } from "./models/Dog";
 
-const collection = Dog.buildDogCollection();
+const dog = Dog.buildDog({breedName: "Pomeranian"})
 
-collection.on('change', () =>{
-  console.log(collection)
-})
+const dogForm = new DogForm(
+  document.getElementById('root'),
+  dog
+);
 
-collection.fetch();
+dogForm.render();
