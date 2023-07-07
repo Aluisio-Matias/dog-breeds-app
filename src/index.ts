@@ -1,10 +1,6 @@
-import { Collection } from "./models/Collection";
-import { Dog, DogProps } from "./models/Dog";
+import { Dog } from "./models/Dog";
 
-const collection = new Collection<Dog, DogProps>(
-  'http://localhost:3000/dogs',
-  (json: DogProps) => Dog.buildDog(json)
-);
+const collection = Dog.buildDogCollection();
 
 collection.on('change', () =>{
   console.log(collection)

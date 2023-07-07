@@ -2,6 +2,7 @@ import { Model } from "./Model";
 import { ApiSync } from "./ApiSync";
 import { Attributes } from "./Attributes";
 import { Eventing } from "./Eventing";
+import { Collection } from "./Collection";
 
 export interface DogProps {
   id?: number;
@@ -23,4 +24,11 @@ export class Dog extends Model<DogProps> {
       new ApiSync<DogProps>(rootUrl)
     );
   }
+
+  static buildDogCollection(): Collection<Dog, DogProps> {
+    return new Collection<Dog, DogProps>(
+      rootUrl,
+      (json: DogProps) => Dog.buildDog(json)
+    );
+  };
 };
