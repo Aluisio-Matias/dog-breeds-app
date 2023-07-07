@@ -575,29 +575,38 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 
 },{}],"h7u1C":[function(require,module,exports) {
 var _dog = require("./models/Dog");
-const dbURL = "http://localhost:3000/dogs";
-const dog = new (0, _dog.Dog)({
-    id: 1,
-    breedName: "G Shep"
+const dog = (0, _dog.Dog).buildDog({
+    id: 3
 });
-dog.on("save", ()=>{
+dog.on("change", ()=>{
     console.log(dog);
 });
-dog.save();
+dog.fetch();
 
 },{"./models/Dog":"e1ndH"}],"e1ndH":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Dog", ()=>Dog);
-var _eventing = require("./Eventing");
-var _sync = require("./Sync");
+var _model = require("./Model");
+var _apiSync = require("./ApiSync");
 var _attributes = require("./Attributes");
+var _eventing = require("./Eventing");
 const rootUrl = "http://localhost:3000/dogs";
-class Dog {
-    constructor(attrs){
-        this.events = new (0, _eventing.Eventing)();
-        this.sync = new (0, _sync.Sync)(rootUrl);
-        this.attributes = new (0, _attributes.Attributes)(attrs);
+class Dog extends (0, _model.Model) {
+    static buildDog(attrs) {
+        return new Dog(new (0, _attributes.Attributes)(attrs), new (0, _eventing.Eventing)(), new (0, _apiSync.ApiSync)(rootUrl));
+    }
+}
+
+},{"./Model":"f033k","./ApiSync":"3wylh","./Attributes":"6Bbds","./Eventing":"7459s","@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"f033k":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Model", ()=>Model);
+class Model {
+    constructor(attributes, events, sync){
+        this.attributes = attributes;
+        this.events = events;
+        this.sync = sync;
     }
     get on() {
         return this.events.on;
@@ -628,7 +637,7 @@ class Dog {
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq","./Eventing":"7459s","./Sync":"QO3Gl","./Attributes":"6Bbds"}],"39NZq":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"39NZq":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -658,37 +667,14 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"7459s":[function(require,module,exports) {
-//type alias - callback funtion that doesn't return anything
+},{}],"3wylh":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Eventing", ()=>Eventing);
-class Eventing {
-    constructor(){
-        this.events = {};
-        this.on = (eventName, callback)=>{
-            const handlers = this.events[eventName] || [];
-            handlers.push(callback);
-            this.events[eventName] = handlers;
-        };
-        this.trigger = (eventName)=>{
-            const handlers = this.events[eventName];
-            if (!handlers || handlers.length === 0) return;
-            handlers.forEach((callback)=>{
-                callback();
-            });
-        };
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"QO3Gl":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Sync", ()=>Sync);
+parcelHelpers.export(exports, "ApiSync", ()=>ApiSync);
 var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
 const rootUrl = "http://localhost:3000/dogs";
-class Sync {
+class ApiSync {
     constructor(rootUrl){
         this.rootUrl = rootUrl;
     }
@@ -5043,6 +5029,29 @@ class Attributes {
     }
     getAll() {
         return this.data;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"7459s":[function(require,module,exports) {
+//type alias - callback funtion that doesn't return anything
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Eventing", ()=>Eventing);
+class Eventing {
+    constructor(){
+        this.events = {};
+        this.on = (eventName, callback)=>{
+            const handlers = this.events[eventName] || [];
+            handlers.push(callback);
+            this.events[eventName] = handlers;
+        };
+        this.trigger = (eventName)=>{
+            const handlers = this.events[eventName];
+            if (!handlers || handlers.length === 0) return;
+            handlers.forEach((callback)=>{
+                callback();
+            });
+        };
     }
 }
 

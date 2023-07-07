@@ -1,12 +1,9 @@
-
 import { Dog } from "./models/Dog";
 
-const dbURL = 'http://localhost:3000/dogs';
+const dog = Dog.buildDog({id: 3})
 
-const dog = new Dog({id: 1, breedName: 'G Shep'})
-
-dog.on('save', () => {
+dog.on('change', () => {
   console.log(dog)
 })
 
-dog.save();
+dog.fetch();
