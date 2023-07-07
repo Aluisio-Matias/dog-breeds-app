@@ -4,22 +4,31 @@ export class DogForm {
   constructor(
     public parent: Element,
     public model: Dog
-    ) {}
+    ) {
+      this.bindModel();
+    }
+
+  bindModel(): void {
+    this.model.on('change', () => {
+      this.render();
+    });
+  };
 
   eventsMap(): {[key: string]: () => void} {
     return {
-      'click:button': this.onButtonClick,
-      'mouseover:h1': this.onHeaderHover
+      'click:.set-name': this.onSetNameClick
     }
-  }
+  };
 
-  onButtonClick(): void {
-    console.log('Button clicked!')
-  }
+  onSetNameClick = (): void => {
+    const input = this.parent.querySelector('input');
 
-  onHeaderHover(): void {
-    console.log('H1 hovered')
-  }
+    //type guard
+    if (input) {
+      const breedName = input.value;
+      this.model.set({ breedName })
+    }
+  };
   
   template(): string {
     return `
@@ -27,7 +36,7 @@ export class DogForm {
       <h1>Dog Form</h1>
       <div>Breed name: ${this.model.get("breedName")}</div>
       <input />
-      <button>Click Me</button>
+      <button class="set-name">Update Name</button>
     </div>
     `;
   };
@@ -45,6 +54,8 @@ export class DogForm {
   }
 
   render(): void {
+    this.parent.innerHTML = '';
+
     const templateElement = document.createElement('template');
     templateElement.innerHTML = this.template();
 
