@@ -1,9 +1,9 @@
-import { Dog } from "./models/Dog";
+import { Collection } from "./models/Collection";
 
-const dog = Dog.buildDog({id: 3})
+const collection = new Collection('http://localhost:3000/dogs')
 
-dog.on('change', () => {
-  console.log(dog)
+collection.on('change', () =>{
+  console.log(collection)
 })
 
-dog.fetch();
+collection.fetch();
