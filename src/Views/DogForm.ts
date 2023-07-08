@@ -1,19 +1,8 @@
-import { Dog } from '../models/Dog'
+import { Dog } from '../models/Dog';
+import { View } from './View';
 
-export class DogForm {
-  constructor(
-    public parent: Element,
-    public model: Dog
-    ) {
-      this.bindModel();
-    }
-
-  bindModel(): void {
-    this.model.on('change', () => {
-      this.render();
-    });
-  };
-
+export class DogForm extends View {
+  
   eventsMap(): {[key: string]: () => void} {
     return {
       'click:.set-name': this.onSetNameClick
@@ -41,26 +30,5 @@ export class DogForm {
     `;
   };
 
-  bindEvents(fragment: DocumentFragment): void {
-    const eventsMap = this.eventsMap();
-
-    for (let eventKey in eventsMap) {
-      const [eventName, selector] = eventKey.split(':');
-
-      fragment.querySelectorAll(selector).forEach(element => {
-        element.addEventListener(eventName, eventsMap[eventKey])
-      })
-    }
-  }
-
-  render(): void {
-    this.parent.innerHTML = '';
-
-    const templateElement = document.createElement('template');
-    templateElement.innerHTML = this.template();
-
-    this.bindEvents(templateElement.content);
-
-    this.parent.append(templateElement.content);
-  }
+  
 };

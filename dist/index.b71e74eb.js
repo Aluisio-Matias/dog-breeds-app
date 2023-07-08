@@ -579,29 +579,23 @@ var _dog = require("./models/Dog");
 const dog = (0, _dog.Dog).buildDog({
     breedName: "Pomeranian"
 });
-const dogForm = new (0, _dogForm.DogForm)(document.getElementById("root"), dog);
-dogForm.render();
+const root = document.getElementById("root");
+//type guard to fix TS error
+if (root) {
+    const dogForm = new (0, _dogForm.DogForm)(root, dog);
+    dogForm.render();
+} else throw new Error("Root element not found!");
 
 },{"./Views/DogForm":"3n77X","./models/Dog":"e1ndH"}],"3n77X":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "DogForm", ()=>DogForm);
-class DogForm {
-    constructor(parent, model){
-        this.parent = parent;
-        this.model = model;
-    }
+var _view = require("./View");
+class DogForm extends (0, _view.View) {
     eventsMap() {
         return {
-            "click:button": this.onButtonClick,
-            "mouseover:h1": this.onHeaderHover
+            "click:.set-name": this.onSetNameClick
         };
-    }
-    onButtonClick() {
-        console.log("Button clicked!");
-    }
-    onHeaderHover() {
-        console.log("H1 hovered");
     }
     template() {
         return `
@@ -609,28 +603,26 @@ class DogForm {
       <h1>Dog Form</h1>
       <div>Breed name: ${this.model.get("breedName")}</div>
       <input />
-      <button>Click Me</button>
+      <button class="set-name">Update Name</button>
     </div>
     `;
     }
-    bindEvents(fragment) {
-        const eventsMap = this.eventsMap();
-        for(let eventKey in eventsMap){
-            const [eventName, selector] = eventKey.split(":");
-            fragment.querySelectorAll(selector).forEach((element)=>{
-                element.addEventListener(eventName, eventsMap[eventKey]);
-            });
-        }
-    }
-    render() {
-        const templateElement = document.createElement("template");
-        templateElement.innerHTML = this.template();
-        this.bindEvents(templateElement.content);
-        this.parent.append(templateElement.content);
+    constructor(...args){
+        super(...args);
+        this.onSetNameClick = ()=>{
+            const input = this.parent.querySelector("input");
+            //type guard
+            if (input) {
+                const breedName = input.value;
+                this.model.set({
+                    breedName
+                });
+            }
+        };
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"39NZq":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq","./View":"gA3o5"}],"39NZq":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -660,7 +652,40 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"e1ndH":[function(require,module,exports) {
+},{}],"gA3o5":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "View", ()=>View);
+class View {
+    constructor(parent, model){
+        this.parent = parent;
+        this.model = model;
+        this.bindModel();
+    }
+    bindModel() {
+        this.model.on("change", ()=>{
+            this.render();
+        });
+    }
+    bindEvents(fragment) {
+        const eventsMap = this.eventsMap();
+        for(let eventKey in eventsMap){
+            const [eventName, selector] = eventKey.split(":");
+            fragment.querySelectorAll(selector).forEach((element)=>{
+                element.addEventListener(eventName, eventsMap[eventKey]);
+            });
+        }
+    }
+    render() {
+        this.parent.innerHTML = "";
+        const templateElement = document.createElement("template");
+        templateElement.innerHTML = this.template();
+        this.bindEvents(templateElement.content);
+        this.parent.append(templateElement.content);
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"e1ndH":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Dog", ()=>Dog);
