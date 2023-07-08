@@ -1,7 +1,7 @@
-import { Dog } from '../models/Dog';
+import { Dog, DogProps } from '../models/Dog';
 import { View } from './View';
 
-export class DogForm extends View {
+export class DogForm extends View<Dog, DogProps> {
   
   eventsMap(): {[key: string]: () => void} {
     return {

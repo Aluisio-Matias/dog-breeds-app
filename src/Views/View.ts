@@ -1,9 +1,9 @@
-import { Dog } from "../models/Dog";
+import { Model, HasId } from "../models/Model";
 
-export abstract class View {
+export abstract class View<T extends Model<K>, K extends HasId> {
   constructor(
     public parent: Element,
-    public model: Dog
+    public model: T
     ) {
       this.bindModel();
     };
