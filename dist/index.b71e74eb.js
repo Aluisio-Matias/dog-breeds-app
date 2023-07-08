@@ -594,21 +594,24 @@ var _view = require("./View");
 class DogForm extends (0, _view.View) {
     eventsMap() {
         return {
-            "click:.set-name": this.onSetNameClick
+            "click:.set-name": this.onSetNameClick,
+            "click:.save-model": this.onSaveClick
         };
     }
     template() {
         return `
     <div>
-      <h1>Dog Form</h1>
-      <div>Breed name: ${this.model.get("breedName")}</div>
-      <input />
+      <input placeholder="${this.model.get("breedName")}" />
       <button class="set-name">Update Name</button>
+      <button class="save-model">Save Dog</button>
     </div>
     `;
     }
     constructor(...args){
         super(...args);
+        this.onSaveClick = ()=>{
+            this.model.save();
+        };
         this.onSetNameClick = ()=>{
             const input = this.parent.querySelector("input");
             //type guard

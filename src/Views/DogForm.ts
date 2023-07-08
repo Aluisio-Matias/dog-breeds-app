@@ -5,9 +5,14 @@ export class DogForm extends View<Dog, DogProps> {
   
   eventsMap(): {[key: string]: () => void} {
     return {
-      'click:.set-name': this.onSetNameClick
+      'click:.set-name': this.onSetNameClick,
+      'click:.save-model': this.onSaveClick
     }
   };
+
+  onSaveClick = (): void => {
+    this.model.save();
+  }
 
   onSetNameClick = (): void => {
     const input = this.parent.querySelector('input');
@@ -22,10 +27,9 @@ export class DogForm extends View<Dog, DogProps> {
   template(): string {
     return `
     <div>
-      <h1>Dog Form</h1>
-      <div>Breed name: ${this.model.get("breedName")}</div>
-      <input />
+      <input placeholder="${this.model.get('breedName')}" />
       <button class="set-name">Update Name</button>
+      <button class="save-model">Save Dog</button>
     </div>
     `;
   };
