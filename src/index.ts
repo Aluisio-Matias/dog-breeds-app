@@ -1,13 +1,18 @@
-import { DogForm } from "./Views/DogForm";
-import { Dog } from "./models/Dog";
+import { DogList } from "./Views/DogList";
+import { Collection } from "./models/Collection";
+import { Dog, DogProps } from "./models/Dog";
 
-const dog = Dog.buildDog({breedName: "Pomeranian"});
-const root = document.getElementById('root')
+const dogs = new Collection('http://localhost:3000/dogs', 
+  (json: DogProps) => {
+    return Dog.buildDog(json);
+});
 
-//type guard to fix TS error
-if (root) {
-  const dogForm = new DogForm(root, dog);
-  dogForm.render();
-} else {
-  throw new Error('Root element not found!');
-};
+dogs.on('change', () => {
+  const root = document.getElementById('root');
+
+  if (root) {
+    new DogList(root, dogs).render();
+  }
+});
+
+dogs.fetch();

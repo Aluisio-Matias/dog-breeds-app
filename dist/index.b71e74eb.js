@@ -574,121 +574,19 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 }
 
 },{}],"h7u1C":[function(require,module,exports) {
-var _dogForm = require("./Views/DogForm");
+var _dogList = require("./Views/DogList");
+var _collection = require("./models/Collection");
 var _dog = require("./models/Dog");
-const dog = (0, _dog.Dog).buildDog({
-    breedName: "Pomeranian"
+const dogs = new (0, _collection.Collection)("http://localhost:3000/dogs", (json)=>{
+    return (0, _dog.Dog).buildDog(json);
 });
-const root = document.getElementById("root");
-//type guard to fix TS error
-if (root) {
-    const dogForm = new (0, _dogForm.DogForm)(root, dog);
-    dogForm.render();
-} else throw new Error("Root element not found!");
+dogs.on("change", ()=>{
+    const root = document.getElementById("root");
+    if (root) new (0, _dogList.DogList)(root, dogs).render();
+});
+dogs.fetch();
 
-},{"./Views/DogForm":"3n77X","./models/Dog":"e1ndH"}],"3n77X":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "DogForm", ()=>DogForm);
-var _view = require("./View");
-class DogForm extends (0, _view.View) {
-    eventsMap() {
-        return {
-            "click:.set-name": this.onSetNameClick,
-            "click:.save-model": this.onSaveClick
-        };
-    }
-    template() {
-        return `
-    <div>
-      <input placeholder="${this.model.get("breedName")}" />
-      <button class="set-name">Update Name</button>
-      <button class="save-model">Save Dog</button>
-    </div>
-    `;
-    }
-    constructor(...args){
-        super(...args);
-        this.onSaveClick = ()=>{
-            this.model.save();
-        };
-        this.onSetNameClick = ()=>{
-            const input = this.parent.querySelector("input");
-            //type guard
-            if (input) {
-                const breedName = input.value;
-                this.model.set({
-                    breedName
-                });
-            }
-        };
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq","./View":"gA3o5"}],"39NZq":[function(require,module,exports) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, "__esModule", {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
-
-},{}],"gA3o5":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "View", ()=>View);
-class View {
-    constructor(parent, model){
-        this.parent = parent;
-        this.model = model;
-        this.bindModel();
-    }
-    bindModel() {
-        this.model.on("change", ()=>{
-            this.render();
-        });
-    }
-    bindEvents(fragment) {
-        const eventsMap = this.eventsMap();
-        for(let eventKey in eventsMap){
-            const [eventName, selector] = eventKey.split(":");
-            fragment.querySelectorAll(selector).forEach((element)=>{
-                element.addEventListener(eventName, eventsMap[eventKey]);
-            });
-        }
-    }
-    render() {
-        this.parent.innerHTML = "";
-        const templateElement = document.createElement("template");
-        templateElement.innerHTML = this.template();
-        this.bindEvents(templateElement.content);
-        this.parent.append(templateElement.content);
-    }
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"e1ndH":[function(require,module,exports) {
+},{"./models/Dog":"e1ndH","./Views/DogList":"bkhUo","./models/Collection":"dD11O"}],"e1ndH":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Dog", ()=>Dog);
@@ -740,7 +638,37 @@ class Model {
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"3wylh":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"39NZq":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}],"3wylh":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ApiSync", ()=>ApiSync);
@@ -5159,6 +5087,108 @@ class Collection {
     }
 }
 
-},{"axios":"jo6P5","./Eventing":"7459s","@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}]},["2dBUg","h7u1C"], "h7u1C", "parcelRequire8009")
+},{"axios":"jo6P5","./Eventing":"7459s","@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"bkhUo":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "DogList", ()=>DogList);
+var _collectionView = require("./CollectionView");
+var _dogShow = require("./DogShow");
+class DogList extends (0, _collectionView.CollectionView) {
+    renderItem(model, itemParent) {
+        new (0, _dogShow.DogShow)(itemParent, model).render();
+    }
+}
+
+},{"./CollectionView":"74wSg","./DogShow":"iJGRt","@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"74wSg":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "CollectionView", ()=>CollectionView);
+class CollectionView {
+    constructor(parent, collection){
+        this.parent = parent;
+        this.collection = collection;
+    }
+    render() {
+        this.parent.innerHTML = "";
+        const templateElement = document.createElement("template");
+        for (let model of this.collection.models){
+            const itemParent = document.createElement("div");
+            this.renderItem(model, itemParent);
+            templateElement.content.append(itemParent);
+        }
+        this.parent.append(templateElement.content);
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"iJGRt":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "DogShow", ()=>DogShow);
+var _view = require("./View");
+class DogShow extends (0, _view.View) {
+    template() {
+        return `
+    <div>
+      <h1>Dog Detail</h1>
+      <div>User Name: ${this.model.get("breedName")}</div>
+      <div>Lifespan: ${this.model.get("lifeSpan")}</div>
+    </div>
+    `;
+    }
+}
+
+},{"./View":"gA3o5","@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}],"gA3o5":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "View", ()=>View);
+class View {
+    constructor(parent, model){
+        this.parent = parent;
+        this.model = model;
+        this.regions = {};
+        this.bindModel();
+    }
+    regionsMap() {
+        return {};
+    }
+    eventsMap() {
+        return {};
+    }
+    bindModel() {
+        this.model.on("change", ()=>{
+            this.render();
+        });
+    }
+    bindEvents(fragment) {
+        const eventsMap = this.eventsMap();
+        for(let eventKey in eventsMap){
+            const [eventName, selector] = eventKey.split(":");
+            fragment.querySelectorAll(selector).forEach((element)=>{
+                element.addEventListener(eventName, eventsMap[eventKey]);
+            });
+        }
+    }
+    mapRegions(fragment) {
+        const regionsMap = this.regionsMap();
+        for(let key in regionsMap){
+            const selector = regionsMap[key];
+            const element = fragment.querySelector(selector);
+            if (element) this.regions[key] = element;
+        }
+    }
+    onRender() {}
+    render() {
+        this.parent.innerHTML = "";
+        const templateElement = document.createElement("template");
+        templateElement.innerHTML = this.template();
+        this.bindEvents(templateElement.content);
+        this.mapRegions(templateElement.content);
+        //onRender() is a helper method for View nesting
+        this.onRender();
+        this.parent.append(templateElement.content);
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"39NZq"}]},["2dBUg","h7u1C"], "h7u1C", "parcelRequire8009")
 
 //# sourceMappingURL=index.b71e74eb.js.map
